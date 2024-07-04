@@ -25,9 +25,6 @@ class ContactKeeper:
         self.btn_add = tk.Button(self.root, text="Add New Contact", command=self.add_new_contact)
         self.btn_add.pack(pady=5)
 
-        self.btn_view = tk.Button(self.root, text="View All Contacts", command=self.view_all_contacts)
-        self.btn_view.pack(pady=5)
-
         self.btn_search = tk.Button(self.root, text="Search Contact", command=self.search_contact)
         self.btn_search.pack(pady=5)
 
@@ -40,6 +37,8 @@ class ContactKeeper:
         self.lst_contacts = tk.Listbox(self.root)
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
 
+        self.display_contacts()
+
     def add_new_contact(self):
         contact_name = simpledialog.askstring("Input", "Enter contact name:")
         contact_phone = simpledialog.askstring("Input", "Enter contact phone number:")
@@ -50,20 +49,28 @@ class ContactKeeper:
             new_contact = ContactEntry(contact_name, contact_phone, contact_email, contact_address)
             self.contacts_db[contact_phone] = new_contact
             messagebox.showinfo("Success", "Contact added successfully!")
+            self.display_contacts()
         else:
             messagebox.showwarning("Input Error", "Name and phone number are required!")
 
-    def view_all_contacts(self):
+    def display_contacts(self):
         self.lst_contacts.delete(0, tk.END)
-        for contact_phone, contact in self.contacts_db.items():
-            self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
+        if not self.contacts_db:
+            self.lst_contacts.insert(tk.END, "No contact found.")
+        else:
+            for contact_phone, contact in self.contacts_db.items():
+                self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
 
     def search_contact(self):
         search_term = simpledialog.askstring("Search", "Enter name or phone number to search:")
         self.lst_contacts.delete(0, tk.END)
+        found = False
         for contact_phone, contact in self.contacts_db.items():
             if search_term in contact.contact_name or search_term in contact_phone:
                 self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
+                found = True
+        if not found:
+            self.lst_contacts.insert(tk.END, "No contact found.")
 
     def update_contact(self):
         search_term = simpledialog.askstring("Search", "Enter phone number of the contact to update:")
@@ -79,6 +86,7 @@ class ContactKeeper:
                 updated_contact = ContactEntry(new_name, new_phone, new_email, new_address)
                 self.contacts_db[new_phone] = updated_contact
                 messagebox.showinfo("Success", "Contact updated successfully!")
+                self.display_contacts()
             else:
                 messagebox.showwarning("Input Error", "Name and phone number are required!")
         else:
@@ -89,6 +97,7 @@ class ContactKeeper:
         if search_term in self.contacts_db:
             del self.contacts_db[search_term]
             messagebox.showinfo("Success", "Contact removed successfully!")
+            self.display_contacts()
         else:
             messagebox.showerror("Error", "Contact not found!")
 
