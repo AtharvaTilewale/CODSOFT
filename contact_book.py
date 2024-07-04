@@ -49,25 +49,25 @@ class ContactKeeper:
         self.btn_back = tk.Button(self.root, text="Back", command=self.display_home_screen)
         self.btn_back.pack(pady=5)
 
-        self.entry_name = tk.Entry(self.root, width=30)
-        self.entry_name.pack(pady=5, padx=10, ipady=3, fill=tk.X)
         self.label_name = tk.Label(self.root, text="Name:")
         self.label_name.pack(pady=(0,5), padx=10, anchor=tk.W)
-
-        self.entry_phone = tk.Entry(self.root, width=30)
-        self.entry_phone.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.entry_name = tk.Entry(self.root, width=30)
+        self.entry_name.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        
         self.label_phone = tk.Label(self.root, text="Phone:")
         self.label_phone.pack(pady=(0,5), padx=10, anchor=tk.W)
-
-        self.entry_email = tk.Entry(self.root, width=30)
-        self.entry_email.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.entry_phone = tk.Entry(self.root, width=30)
+        self.entry_phone.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        
         self.label_email = tk.Label(self.root, text="Email:")
         self.label_email.pack(pady=(0,5), padx=10, anchor=tk.W)
-
-        self.entry_address = tk.Entry(self.root, width=30)
-        self.entry_address.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.entry_email = tk.Entry(self.root, width=30)
+        self.entry_email.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        
         self.label_address = tk.Label(self.root, text="Address:")
         self.label_address.pack(pady=(0,10), padx=10, anchor=tk.W)
+        self.entry_address = tk.Entry(self.root, width=30)
+        self.entry_address.pack(pady=5, padx=10, ipady=3, fill=tk.X)
 
         self.btn_save = tk.Button(self.root, text="Save Contact", command=self.save_contact)
         self.btn_save.pack(pady=5)
