@@ -22,14 +22,11 @@ class ContactKeeper:
         self.title_label = tk.Label(self.root, text="Contact Keeper", font=("Helvetica", 16))
         self.title_label.pack(pady=10)
 
-        self.btn_add = tk.Button(self.root, text="Add New Contact", command=self.add_new_contact)
+        self.btn_add = tk.Button(self.root, text="Add New Contact", command=self.setup_add_contact_ui)
         self.btn_add.pack(pady=5)
 
         self.btn_search = tk.Button(self.root, text="Search Contact", command=self.search_contact)
         self.btn_search.pack(pady=5)
-
-        self.btn_update = tk.Button(self.root, text="Update Contact", command=self.update_contact)
-        self.btn_update.pack(pady=5)
 
         self.btn_delete = tk.Button(self.root, text="Remove Contact", command=self.remove_contact)
         self.btn_delete.pack(pady=5)
@@ -39,17 +36,75 @@ class ContactKeeper:
 
         self.display_contacts()
 
-    def add_new_contact(self):
-        contact_name = simpledialog.askstring("Input", "Enter contact name:")
-        contact_phone = simpledialog.askstring("Input", "Enter contact phone number:")
-        contact_email = simpledialog.askstring("Input", "Enter contact email:")
-        contact_address = simpledialog.askstring("Input", "Enter contact address:")
+    def setup_add_contact_ui(self):
+        self.clear_home_screen()
+
+        self.btn_back = tk.Button(self.root, text="Back", command=self.display_home_screen)
+        self.btn_back.pack(pady=5)
+
+        self.entry_name = tk.Entry(self.root, width=30)
+        self.entry_name.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.label_name = tk.Label(self.root, text="Name:")
+        self.label_name.pack(pady=(0,5), padx=10, anchor=tk.W)
+
+        self.entry_phone = tk.Entry(self.root, width=30)
+        self.entry_phone.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.label_phone = tk.Label(self.root, text="Phone:")
+        self.label_phone.pack(pady=(0,5), padx=10, anchor=tk.W)
+
+        self.entry_email = tk.Entry(self.root, width=30)
+        self.entry_email.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.label_email = tk.Label(self.root, text="Email:")
+        self.label_email.pack(pady=(0,5), padx=10, anchor=tk.W)
+
+        self.entry_address = tk.Entry(self.root, width=30)
+        self.entry_address.pack(pady=5, padx=10, ipady=3, fill=tk.X)
+        self.label_address = tk.Label(self.root, text="Address:")
+        self.label_address.pack(pady=(0,10), padx=10, anchor=tk.W)
+
+        self.btn_save = tk.Button(self.root, text="Save Contact", command=self.save_contact)
+        self.btn_save.pack(pady=5)
+
+        # Re-add the buttons for Search and Remove
+        self.btn_search = tk.Button(self.root, text="Search Contact", command=self.search_contact)
+        self.btn_search.pack(pady=5)
+
+        self.btn_delete = tk.Button(self.root, text="Remove Contact", command=self.remove_contact)
+        self.btn_delete.pack(pady=5)
+
+        # Re-add the listbox for displaying contacts
+        self.lst_contacts = tk.Listbox(self.root)
+        self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
+
+    def display_home_screen(self):
+        self.clear_add_contact_ui()
+        self.setup_add_contact_ui()  # Re-setup add contact UI
+        self.display_contacts()  # Re-display contacts list
+
+    def clear_home_screen(self):
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Listbox):
+                widget.pack_forget()
+
+    def clear_add_contact_ui(self):
+        if hasattr(self, 'btn_back'):
+            self.btn_back.pack_forget()
+
+        for widget in self.root.winfo_children():
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
+                widget.pack_forget()
+
+    def save_contact(self):
+        contact_name = self.entry_name.get()
+        contact_phone = self.entry_phone.get()
+        contact_email = self.entry_email.get()
+        contact_address = self.entry_address.get()
 
         if contact_name and contact_phone:
             new_contact = ContactEntry(contact_name, contact_phone, contact_email, contact_address)
             self.contacts_db[contact_phone] = new_contact
             messagebox.showinfo("Success", "Contact added successfully!")
-            self.display_contacts()
+            self.display_home_screen()  # Go back to home screen after saving
         else:
             messagebox.showwarning("Input Error", "Name and phone number are required!")
 
@@ -72,32 +127,12 @@ class ContactKeeper:
         if not found:
             self.lst_contacts.insert(tk.END, "No contact found.")
 
-    def update_contact(self):
-        search_term = simpledialog.askstring("Search", "Enter phone number of the contact to update:")
-        if search_term in self.contacts_db:
-            contact = self.contacts_db[search_term]
-            new_name = simpledialog.askstring("Input", "Enter new contact name:", initialvalue=contact.contact_name)
-            new_phone = simpledialog.askstring("Input", "Enter new contact phone number:", initialvalue=contact.contact_phone)
-            new_email = simpledialog.askstring("Input", "Enter new contact email:", initialvalue=contact.contact_email)
-            new_address = simpledialog.askstring("Input", "Enter new contact address:", initialvalue=contact.contact_address)
-
-            if new_name and new_phone:
-                del self.contacts_db[search_term]
-                updated_contact = ContactEntry(new_name, new_phone, new_email, new_address)
-                self.contacts_db[new_phone] = updated_contact
-                messagebox.showinfo("Success", "Contact updated successfully!")
-                self.display_contacts()
-            else:
-                messagebox.showwarning("Input Error", "Name and phone number are required!")
-        else:
-            messagebox.showerror("Error", "Contact not found!")
-
     def remove_contact(self):
-        search_term = simpledialog.askstring("Search", "Enter phone number of the contact to remove:")
+        search_term = simpledialog.askstring("Remove", "Enter phone number of the contact to remove:")
         if search_term in self.contacts_db:
             del self.contacts_db[search_term]
             messagebox.showinfo("Success", "Contact removed successfully!")
-            self.display_contacts()
+            self.display_home_screen()  # Update contact list after removal
         else:
             messagebox.showerror("Error", "Contact not found!")
 
