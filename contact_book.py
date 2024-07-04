@@ -22,14 +22,21 @@ class ContactKeeper:
         self.title_label = tk.Label(self.root, text="Contact Keeper", font=("Helvetica", 16))
         self.title_label.pack(pady=10)
 
-        self.btn_add = tk.Button(self.root, text="Add New Contact", command=self.setup_add_contact_ui)
-        self.btn_add.pack(pady=5)
+        self.entry_search = tk.Entry(self.root, width=30)
+        self.entry_search.pack(pady=10, padx=10, ipady=3, fill=tk.X)
+        self.entry_search.insert(0, "Search Contact")
+        self.entry_search.bind('<FocusIn>', self.on_entry_click)
+        self.entry_search.bind('<FocusOut>', self.on_focus_out)
+        self.entry_search.bind('<Return>', self.search_contact)
 
-        self.btn_search = tk.Button(self.root, text="Search Contact", command=self.search_contact)
-        self.btn_search.pack(pady=5)
+        self.frame_buttons = tk.Frame(self.root)
+        self.frame_buttons.pack(pady=5)
 
-        self.btn_delete = tk.Button(self.root, text="Remove Contact", command=self.remove_contact)
-        self.btn_delete.pack(pady=5)
+        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui)
+        self.btn_add.pack(side=tk.LEFT, padx=(10, 5))
+
+        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact)
+        self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
 
         self.lst_contacts = tk.Listbox(self.root)
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
@@ -65,25 +72,33 @@ class ContactKeeper:
         self.btn_save = tk.Button(self.root, text="Save Contact", command=self.save_contact)
         self.btn_save.pack(pady=5)
 
-        # Re-add the buttons for Search and Remove
-        self.btn_search = tk.Button(self.root, text="Search Contact", command=self.search_contact)
-        self.btn_search.pack(pady=5)
+    def display_home_screen(self):
+        self.clear_add_contact_ui()
 
-        self.btn_delete = tk.Button(self.root, text="Remove Contact", command=self.remove_contact)
-        self.btn_delete.pack(pady=5)
+        self.entry_search = tk.Entry(self.root, width=30)
+        self.entry_search.pack(pady=10, padx=10, ipady=3, fill=tk.X)
+        self.entry_search.insert(0, "Search Contact")
+        self.entry_search.bind('<FocusIn>', self.on_entry_click)
+        self.entry_search.bind('<FocusOut>', self.on_focus_out)
+        self.entry_search.bind('<Return>', self.search_contact)
 
-        # Re-add the listbox for displaying contacts
+        self.frame_buttons = tk.Frame(self.root)
+        self.frame_buttons.pack(pady=5)
+
+        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui)
+        self.btn_add.pack(side=tk.LEFT, padx=(10, 5))
+
+        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact)
+        self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
+
         self.lst_contacts = tk.Listbox(self.root)
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
 
-    def display_home_screen(self):
-        self.clear_add_contact_ui()
-        self.setup_add_contact_ui()  # Re-setup add contact UI
-        self.display_contacts()  # Re-display contacts list
+        self.display_contacts()
 
     def clear_home_screen(self):
         for widget in self.root.winfo_children():
-            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Listbox):
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Listbox) or isinstance(widget, tk.Frame):
                 widget.pack_forget()
 
     def clear_add_contact_ui(self):
@@ -91,7 +106,7 @@ class ContactKeeper:
             self.btn_back.pack_forget()
 
         for widget in self.root.winfo_children():
-            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Frame):
                 widget.pack_forget()
 
     def save_contact(self):
@@ -116,12 +131,12 @@ class ContactKeeper:
             for contact_phone, contact in self.contacts_db.items():
                 self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
 
-    def search_contact(self):
-        search_term = simpledialog.askstring("Search", "Enter name or phone number to search:")
+    def search_contact(self, event=None):
+        search_term = self.entry_search.get()
         self.lst_contacts.delete(0, tk.END)
         found = False
         for contact_phone, contact in self.contacts_db.items():
-            if search_term in contact.contact_name or search_term in contact_phone:
+            if search_term.lower() in contact.contact_name.lower() or search_term in contact_phone:
                 self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
                 found = True
         if not found:
@@ -135,6 +150,16 @@ class ContactKeeper:
             self.display_home_screen()  # Update contact list after removal
         else:
             messagebox.showerror("Error", "Contact not found!")
+
+    def on_entry_click(self, event):
+        if self.entry_search.get() == "Search Contact":
+            self.entry_search.delete(0, tk.END)
+            self.entry_search.config(fg='black')
+
+    def on_focus_out(self, event):
+        if self.entry_search.get() == "":
+            self.entry_search.insert(0, "Search Contact")
+            self.entry_search.config(fg='grey')
 
 if __name__ == "__main__":
     root = tk.Tk()
