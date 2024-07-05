@@ -17,8 +17,16 @@ def generate_password(password_length):
     return password
 
 def main():
-    # Prompt the user to specify the desired length of the password
-    desired_length = int(input("Enter the desired length of the password: "))
+    while True:
+        # Prompt the user to specify the desired length of the password
+        length_input = input("Enter the desired length of the password (numbers only): ")
+
+        # Check if the input consists only of digits
+        if length_input.isdigit():
+            desired_length = int(length_input)
+            break
+        else:
+            print("Please enter numbers only for password length.")
 
     # Generate the password
     generated_password = generate_password(desired_length)
