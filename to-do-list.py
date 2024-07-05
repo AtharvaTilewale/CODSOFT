@@ -35,7 +35,7 @@ def show_task_details():
         label_description_details = tk.Label(details_window, text=f"Description:", font=("Arial", 10))
         label_description_details.pack()
         
-        text_description_details = tk.Text(details_window, height=5, width=50)
+        text_description_details = tk.Text(details_window, height=10, width=50)
         text_description_details.insert(tk.END, task.description)
         text_description_details.pack()
         
@@ -72,29 +72,29 @@ tasks = []
 label_title = tk.Label(root, text="Title", bg="white")
 label_title.pack()
 
-entry_title = tk.Entry(root, width=50, bd=1)
-entry_title.pack()
+entry_title = tk.Entry(root, width=50, bd=1, relief=tk.SOLID)
+entry_title.pack(ipady=5, pady=(0, 10))
 
 label_description = tk.Label(root, text="Description", bg="white")
 label_description.pack()
 
-text_description = tk.Text(root, height=5, width=50)
-text_description.pack()
+text_description = tk.Text(root, height=10, width=50, bd=1, relief=tk.SOLID)
+text_description.pack(ipady=5, pady=(0, 10))
 
 button_add_task = tk.Button(root, text="Add Task", command=add_task, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
-button_add_task.pack()
+button_add_task.pack(ipady=5, pady=(0, 10))
+
+listbox_tasks = tk.Listbox(root, height=10, width=50, bd=1, relief=tk.SOLID)
+listbox_tasks.pack()
 
 frame_buttons = tk.Frame(root, bg="white")
 frame_buttons.pack(pady=10)
 
-button_show_details = tk.Button(frame_buttons, text="Show Details", command=show_task_details, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
-button_show_details.pack(side=tk.LEFT, padx=10)
-
 button_delete_task = tk.Button(frame_buttons, text="Delete Task", command=delete_task, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
-button_delete_task.pack(side=tk.LEFT, padx=10)
+button_delete_task.pack(side=tk.RIGHT, padx=10)
 
-listbox_tasks = tk.Listbox(root, height=10, width=50)
-listbox_tasks.pack()
+button_show_details = tk.Button(frame_buttons, text="Show Details", command=show_task_details, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
+button_show_details.pack(side=tk.RIGHT, padx=10)
 
 # Start the main loop
 root.mainloop()
