@@ -33,14 +33,15 @@ class ContactKeeper:
 
         self.root.title("Contact Keeper")
         self.root.geometry("400x600")
+        self.root.configure(bg="white")  # Set background color
 
-        self.title_label = tk.Label(self.root, text="Contact Keeper", font=("Helvetica", 16))
+        self.title_label = tk.Label(self.root, text="Contact Keeper", font=("Helvetica", 16), bg="white")
         self.title_label.pack(pady=10)
 
         # Entry style configuration
         entry_style = {
             "bg": "white",
-            "bd": 0,
+            "bd": 1,
             "relief": "solid",
             "font": ("Helvetica", 10)
         }
@@ -54,10 +55,10 @@ class ContactKeeper:
         self.entry_search.bind('<Return>', self.search_contact)
 
         # Frame for buttons
-        self.frame_buttons = tk.Frame(self.root)
+        self.frame_buttons = tk.Frame(self.root, bg="white")
         self.frame_buttons.pack(pady=5)
 
-        # Button style configuration
+        # Button style configuration for home screen
         button_style = {
             "bg": "white",
             "font": ("Helvetica", 10),
@@ -80,8 +81,9 @@ class ContactKeeper:
         self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
 
         # Listbox to display contacts
-        self.lst_contacts = tk.Listbox(self.root)
+        self.lst_contacts = tk.Listbox(self.root, bg="white")
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
+        self.lst_contacts.bind('<Double-Button-1>', self.update_contact_ui)  # Double-click to update contact
 
         # Display initial list of contacts
         self.display_contacts()
@@ -118,22 +120,22 @@ class ContactKeeper:
         self.btn_back.pack(pady=5)
 
         # Labels and entry fields for name, phone, email, and address
-        self.label_name = tk.Label(self.root, text="Name:")
+        self.label_name = tk.Label(self.root, text="Name:", bg="white")
         self.label_name.pack(pady=(0, 5), padx=10, anchor=tk.W)
         self.entry_name = tk.Entry(self.root, width=30, **entry_style)
         self.entry_name.pack(pady=5, padx=10, ipady=3, fill=tk.X)
 
-        self.label_phone = tk.Label(self.root, text="Phone:")
+        self.label_phone = tk.Label(self.root, text="Phone:", bg="white")
         self.label_phone.pack(pady=(0, 5), padx=10, anchor=tk.W)
         self.entry_phone = tk.Entry(self.root, width=30, **entry_style)
         self.entry_phone.pack(pady=5, padx=10, ipady=3, fill=tk.X)
 
-        self.label_email = tk.Label(self.root, text="Email:")
+        self.label_email = tk.Label(self.root, text="Email:", bg="white")
         self.label_email.pack(pady=(0, 5), padx=10, anchor=tk.W)
         self.entry_email = tk.Entry(self.root, width=30, **entry_style)
         self.entry_email.pack(pady=5, padx=10, ipady=3, fill=tk.X)
 
-        self.label_address = tk.Label(self.root, text="Address:")
+        self.label_address = tk.Label(self.root, text="Address:", bg="white")
         self.label_address.pack(pady=(0, 10), padx=10, anchor=tk.W)
         self.entry_address = tk.Entry(self.root, width=30, **entry_style)
         self.entry_address.pack(pady=5, padx=10, ipady=3, fill=tk.X)
@@ -154,7 +156,7 @@ class ContactKeeper:
         # Entry style configuration for home screen
         entry_style = {
             "bg": "white",
-            "bd": 0,
+            "bd": 1,
             "relief": "solid",
             "font": ("Helvetica", 10)
         }
@@ -168,7 +170,7 @@ class ContactKeeper:
         self.entry_search.bind('<Return>', self.search_contact)
 
         # Frame for buttons
-        self.frame_buttons = tk.Frame(self.root)
+        self.frame_buttons = tk.Frame(self.root, bg="white")
         self.frame_buttons.pack(pady=5)
 
         # Button style configuration for home screen
@@ -194,34 +196,37 @@ class ContactKeeper:
         self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
 
         # Listbox to display contacts
-        self.lst_contacts = tk.Listbox(self.root)
+        self.lst_contacts = tk.Listbox(self.root, bg="white")
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
+        self.lst_contacts.bind('<Double-Button-1>', self.update_contact_ui)  # Double-click to update contact
 
         # Display initial list of contacts
         self.display_contacts()
 
     def clear_home_screen(self):
         """
-        Clear all widgets from the home screen.
+        Clear the home screen UI elements.
         """
+        self.title_label.pack_forget()
+
         for widget in self.root.winfo_children():
-            if isinstance(widget, (tk.Entry, tk.Label, tk.Button, tk.Listbox, tk.Frame)):
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Listbox) or isinstance(widget, tk.Frame):
                 widget.pack_forget()
 
     def clear_add_contact_ui(self):
         """
-        Clear widgets from the add contact UI.
+        Clear the add contact UI elements.
         """
         if hasattr(self, 'btn_back'):
             self.btn_back.pack_forget()
 
         for widget in self.root.winfo_children():
-            if isinstance(widget, (tk.Entry, tk.Label, tk.Button)):
+            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button):
                 widget.pack_forget()
 
     def save_contact(self):
         """
-        Save the contact details entered in the add contact UI.
+        Save the contact details entered into the database.
         """
         contact_name = self.entry_name.get()
         contact_phone = self.entry_phone.get()
@@ -238,7 +243,7 @@ class ContactKeeper:
 
     def display_contacts(self):
         """
-        Display all contacts in the listbox.
+        Display the list of contacts in the listbox.
         """
         self.lst_contacts.delete(0, tk.END)
         if not self.contacts_db:
@@ -275,6 +280,26 @@ class ContactKeeper:
         else:
             messagebox.showerror("Error", "Contact not found!")
 
+    def update_contact(self, phone_number):
+        """
+        Update an existing contact's details.
+
+        Args:
+        - phone_number (str): The phone number of the contact to update.
+        """
+        contact_name = self.entry_name.get()
+        contact_phone = self.entry_phone.get()
+        contact_email = self.entry_email.get()
+        contact_address = self.entry_address.get()
+
+        if contact_name and contact_phone:
+            updated_contact = ContactEntry(contact_name, contact_phone, contact_email, contact_address)
+            self.contacts_db[phone_number] = updated_contact
+            messagebox.showinfo("Success", "Contact updated successfully!")
+            self.display_home_screen()  # Go back to home screen after updating
+        else:
+            messagebox.showwarning("Input Error", "Name and phone number are required!")
+
     def on_entry_click(self, event):
         """
         Handle behavior when the search entry is clicked (to remove default text).
@@ -290,6 +315,35 @@ class ContactKeeper:
         if self.entry_search.get() == "":
             self.entry_search.insert(0, "Search Contact")
             self.entry_search.config(fg='grey')
+
+    def update_contact_ui(self, event=None):
+        """
+        Update UI when a contact is double-clicked in the listbox for updating.
+        """
+        selected_index = self.lst_contacts.curselection()
+        if selected_index:
+            self.setup_update_contact_ui()
+
+    def setup_update_contact_ui(self):
+        """
+        Set up the UI for updating an existing contact.
+        """
+        selected_index = self.lst_contacts.curselection()
+        if not selected_index:
+            return
+
+        selected_contact = self.lst_contacts.get(selected_index)
+        selected_phone = selected_contact.split(" - ")[1]
+
+        if selected_phone in self.contacts_db:
+            contact = self.contacts_db[selected_phone]
+            self.setup_add_contact_ui()  # Reuse add contact UI setup
+            self.entry_name.insert(0, contact.contact_name)
+            self.entry_phone.insert(0, contact.contact_phone)
+            self.entry_email.insert(0, contact.contact_email)
+            self.entry_address.insert(0, contact.contact_address)
+            self.btn_save.configure(command=lambda: self.update_contact(selected_phone))
+            self.btn_back.configure(command=self.display_home_screen)
 
 if __name__ == "__main__":
     root = tk.Tk()
