@@ -28,11 +28,11 @@ def show_task_details():
         details_window.title("Task Details")
         
         # Display task title
-        label_title_details = tk.Label(details_window, text=f"Title: {task.title}")
+        label_title_details = tk.Label(details_window, text=f"Title: {task.title}", font=("Arial", 10))
         label_title_details.pack()
         
         # Display task description
-        label_description_details = tk.Label(details_window, text=f"Description:")
+        label_description_details = tk.Label(details_window, text=f"Description:", font=("Arial", 10))
         label_description_details.pack()
         
         text_description_details = tk.Text(details_window, height=5, width=50)
@@ -40,8 +40,9 @@ def show_task_details():
         text_description_details.pack()
         
         # Button to delete the task
-        button_delete_task_details = tk.Button(details_window, text="Delete Task", command=lambda: delete_task_from_details(index, details_window))
-        button_delete_task_details.pack()
+        button_delete_task_details = tk.Button(details_window, text="Delete Task", command=lambda: delete_task_from_details(index, details_window), 
+                                              bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
+        button_delete_task_details.pack(side=tk.BOTTOM, pady=10)
         
     except IndexError:
         messagebox.showwarning("Task Details", "Please select a task to view details.")
@@ -63,33 +64,37 @@ def delete_task_from_details(index, details_window):
 # Create the main application window
 root = tk.Tk()
 root.title("To-Do List Application")
+root.configure(bg="white")
 
 # Task list and GUI elements
 tasks = []
 
-label_title = tk.Label(root, text="Title")
+label_title = tk.Label(root, text="Title", bg="white")
 label_title.pack()
 
-entry_title = tk.Entry(root, width=50)
+entry_title = tk.Entry(root, width=50, bd=1)
 entry_title.pack()
 
-label_description = tk.Label(root, text="Description")
+label_description = tk.Label(root, text="Description", bg="white")
 label_description.pack()
 
 text_description = tk.Text(root, height=5, width=50)
 text_description.pack()
 
-button_add_task = tk.Button(root, text="Add Task", command=add_task)
+button_add_task = tk.Button(root, text="Add Task", command=add_task, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
 button_add_task.pack()
+
+frame_buttons = tk.Frame(root, bg="white")
+frame_buttons.pack(pady=10)
+
+button_show_details = tk.Button(frame_buttons, text="Show Details", command=show_task_details, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
+button_show_details.pack(side=tk.LEFT, padx=10)
+
+button_delete_task = tk.Button(frame_buttons, text="Delete Task", command=delete_task, bg="white", fg="black", bd=1, relief=tk.SOLID, font=("Arial", 10))
+button_delete_task.pack(side=tk.LEFT, padx=10)
 
 listbox_tasks = tk.Listbox(root, height=10, width=50)
 listbox_tasks.pack()
-
-button_show_details = tk.Button(root, text="Show Details", command=show_task_details)
-button_show_details.pack()
-
-button_delete_task = tk.Button(root, text="Delete Task", command=delete_task)
-button_delete_task.pack()
 
 # Start the main loop
 root.mainloop()
