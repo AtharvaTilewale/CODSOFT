@@ -5,6 +5,15 @@ from tkinter import simpledialog
 # ContactEntry class to hold contact details
 class ContactEntry:
     def __init__(self, contact_name, contact_phone, contact_email, contact_address):
+        """
+        Initialize a ContactEntry object with name, phone, email, and address.
+
+        Args:
+        - contact_name (str): Name of the contact.
+        - contact_phone (str): Phone number of the contact.
+        - contact_email (str): Email address of the contact.
+        - contact_address (str): Physical address of the contact.
+        """
         self.contact_name = contact_name
         self.contact_phone = contact_phone
         self.contact_email = contact_email
@@ -13,103 +22,207 @@ class ContactEntry:
 # Main ContactKeeper class
 class ContactKeeper:
     def __init__(self, root):
+        """
+        Initialize the ContactKeeper application.
+
+        Args:
+        - root (tk.Tk): The main tkinter root window.
+        """
         self.root = root
         self.contacts_db = {}
-        
+
         self.root.title("Contact Keeper")
         self.root.geometry("400x600")
 
         self.title_label = tk.Label(self.root, text="Contact Keeper", font=("Helvetica", 16))
         self.title_label.pack(pady=10)
 
-        self.entry_search = tk.Entry(self.root, width=30)
+        # Entry style configuration
+        entry_style = {
+            "bg": "white",
+            "bd": 0,
+            "relief": "solid",
+            "font": ("Helvetica", 10)
+        }
+
+        # Search entry setup
+        self.entry_search = tk.Entry(self.root, width=30, **entry_style)
         self.entry_search.pack(pady=10, padx=10, ipady=3, fill=tk.X)
         self.entry_search.insert(0, "Search Contact")
         self.entry_search.bind('<FocusIn>', self.on_entry_click)
         self.entry_search.bind('<FocusOut>', self.on_focus_out)
         self.entry_search.bind('<Return>', self.search_contact)
 
+        # Frame for buttons
         self.frame_buttons = tk.Frame(self.root)
         self.frame_buttons.pack(pady=5)
 
-        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui)
+        # Button style configuration
+        button_style = {
+            "bg": "white",
+            "font": ("Helvetica", 10),
+            "bd": 1,
+            "relief": "solid",
+            "highlightthickness": 0,
+            "borderwidth": 1,
+            "highlightbackground": "navy",
+            "highlightcolor": "navy",
+            "activebackground": "white",
+            "activeforeground": "black"
+        }
+
+        # Add New Contact button
+        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui, **button_style)
         self.btn_add.pack(side=tk.LEFT, padx=(10, 5))
 
-        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact)
+        # Remove Contact button
+        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact, **button_style)
         self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
 
+        # Listbox to display contacts
         self.lst_contacts = tk.Listbox(self.root)
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
 
+        # Display initial list of contacts
         self.display_contacts()
 
     def setup_add_contact_ui(self):
+        """
+        Set up the UI for adding a new contact.
+        """
         self.clear_home_screen()
 
-        self.btn_back = tk.Button(self.root, text="Back", command=self.display_home_screen)
+        # Button and entry style configuration for add contact UI
+        button_style = {
+            "bg": "white",
+            "font": ("Helvetica", 10),
+            "bd": 1,
+            "relief": "solid",
+            "highlightthickness": 0,
+            "borderwidth": 1,
+            "highlightbackground": "navy",
+            "highlightcolor": "navy",
+            "activebackground": "white",
+            "activeforeground": "black"
+        }
+
+        entry_style = {
+            "bg": "white",
+            "bd": 1,
+            "relief": "solid",
+            "font": ("Helvetica", 10)
+        }
+
+        # Back button to return to home screen
+        self.btn_back = tk.Button(self.root, text="Back", command=self.display_home_screen, **button_style)
         self.btn_back.pack(pady=5)
 
+        # Labels and entry fields for name, phone, email, and address
         self.label_name = tk.Label(self.root, text="Name:")
-        self.label_name.pack(pady=(0,5), padx=10, anchor=tk.W)
-        self.entry_name = tk.Entry(self.root, width=30)
+        self.label_name.pack(pady=(0, 5), padx=10, anchor=tk.W)
+        self.entry_name = tk.Entry(self.root, width=30, **entry_style)
         self.entry_name.pack(pady=5, padx=10, ipady=3, fill=tk.X)
-        
+
         self.label_phone = tk.Label(self.root, text="Phone:")
-        self.label_phone.pack(pady=(0,5), padx=10, anchor=tk.W)
-        self.entry_phone = tk.Entry(self.root, width=30)
+        self.label_phone.pack(pady=(0, 5), padx=10, anchor=tk.W)
+        self.entry_phone = tk.Entry(self.root, width=30, **entry_style)
         self.entry_phone.pack(pady=5, padx=10, ipady=3, fill=tk.X)
-        
+
         self.label_email = tk.Label(self.root, text="Email:")
-        self.label_email.pack(pady=(0,5), padx=10, anchor=tk.W)
-        self.entry_email = tk.Entry(self.root, width=30)
+        self.label_email.pack(pady=(0, 5), padx=10, anchor=tk.W)
+        self.entry_email = tk.Entry(self.root, width=30, **entry_style)
         self.entry_email.pack(pady=5, padx=10, ipady=3, fill=tk.X)
-        
+
         self.label_address = tk.Label(self.root, text="Address:")
-        self.label_address.pack(pady=(0,10), padx=10, anchor=tk.W)
-        self.entry_address = tk.Entry(self.root, width=30)
+        self.label_address.pack(pady=(0, 10), padx=10, anchor=tk.W)
+        self.entry_address = tk.Entry(self.root, width=30, **entry_style)
         self.entry_address.pack(pady=5, padx=10, ipady=3, fill=tk.X)
 
-        self.btn_save = tk.Button(self.root, text="Save Contact", command=self.save_contact)
+        # Save contact button
+        self.btn_save = tk.Button(self.root, text="Save Contact", command=self.save_contact, **button_style)
         self.btn_save.pack(pady=5)
 
     def display_home_screen(self):
+        """
+        Display the home screen with search, add, and remove contact options.
+        """
         self.clear_add_contact_ui()
 
-        self.entry_search = tk.Entry(self.root, width=30)
+        # Show title label when back to home screen
+        self.title_label.pack(pady=10)
+
+        # Entry style configuration for home screen
+        entry_style = {
+            "bg": "white",
+            "bd": 0,
+            "relief": "solid",
+            "font": ("Helvetica", 10)
+        }
+
+        # Search entry setup
+        self.entry_search = tk.Entry(self.root, width=30, **entry_style)
         self.entry_search.pack(pady=10, padx=10, ipady=3, fill=tk.X)
         self.entry_search.insert(0, "Search Contact")
         self.entry_search.bind('<FocusIn>', self.on_entry_click)
         self.entry_search.bind('<FocusOut>', self.on_focus_out)
         self.entry_search.bind('<Return>', self.search_contact)
 
+        # Frame for buttons
         self.frame_buttons = tk.Frame(self.root)
         self.frame_buttons.pack(pady=5)
 
-        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui)
+        # Button style configuration for home screen
+        button_style = {
+            "bg": "white",
+            "font": ("Helvetica", 10),
+            "bd": 1,
+            "relief": "solid",
+            "highlightthickness": 0,
+            "borderwidth": 1,
+            "highlightbackground": "navy",
+            "highlightcolor": "navy",
+            "activebackground": "white",
+            "activeforeground": "black"
+        }
+
+        # Add New Contact button
+        self.btn_add = tk.Button(self.frame_buttons, text="Add New Contact", command=self.setup_add_contact_ui, **button_style)
         self.btn_add.pack(side=tk.LEFT, padx=(10, 5))
 
-        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact)
+        # Remove Contact button
+        self.btn_delete = tk.Button(self.frame_buttons, text="Remove Contact", command=self.remove_contact, **button_style)
         self.btn_delete.pack(side=tk.LEFT, padx=(5, 10))
 
+        # Listbox to display contacts
         self.lst_contacts = tk.Listbox(self.root)
         self.lst_contacts.pack(pady=20, fill=tk.BOTH, expand=True)
 
+        # Display initial list of contacts
         self.display_contacts()
 
     def clear_home_screen(self):
+        """
+        Clear all widgets from the home screen.
+        """
         for widget in self.root.winfo_children():
-            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Listbox) or isinstance(widget, tk.Frame):
+            if isinstance(widget, (tk.Entry, tk.Label, tk.Button, tk.Listbox, tk.Frame)):
                 widget.pack_forget()
 
     def clear_add_contact_ui(self):
+        """
+        Clear widgets from the add contact UI.
+        """
         if hasattr(self, 'btn_back'):
             self.btn_back.pack_forget()
 
         for widget in self.root.winfo_children():
-            if isinstance(widget, tk.Entry) or isinstance(widget, tk.Label) or isinstance(widget, tk.Button) or isinstance(widget, tk.Frame):
+            if isinstance(widget, (tk.Entry, tk.Label, tk.Button)):
                 widget.pack_forget()
 
     def save_contact(self):
+        """
+        Save the contact details entered in the add contact UI.
+        """
         contact_name = self.entry_name.get()
         contact_phone = self.entry_phone.get()
         contact_email = self.entry_email.get()
@@ -124,6 +237,9 @@ class ContactKeeper:
             messagebox.showwarning("Input Error", "Name and phone number are required!")
 
     def display_contacts(self):
+        """
+        Display all contacts in the listbox.
+        """
         self.lst_contacts.delete(0, tk.END)
         if not self.contacts_db:
             self.lst_contacts.insert(tk.END, "No contact found.")
@@ -132,6 +248,9 @@ class ContactKeeper:
                 self.lst_contacts.insert(tk.END, f"{contact.contact_name} - {contact.contact_phone}")
 
     def search_contact(self, event=None):
+        """
+        Search contacts based on the search term entered.
+        """
         search_term = self.entry_search.get()
         self.lst_contacts.delete(0, tk.END)
         found = False
@@ -143,20 +262,31 @@ class ContactKeeper:
             self.lst_contacts.insert(tk.END, "No contact found.")
 
     def remove_contact(self):
+        """
+        Remove a contact based on the phone number entered.
+        """
         search_term = simpledialog.askstring("Remove", "Enter phone number of the contact to remove:")
+        if search_term is None:
+            return  # User cancelled, do nothing
         if search_term in self.contacts_db:
             del self.contacts_db[search_term]
             messagebox.showinfo("Success", "Contact removed successfully!")
-            self.display_home_screen()  # Update contact list after removal
+            self.display_contacts()  # Update contact list after removal
         else:
             messagebox.showerror("Error", "Contact not found!")
 
     def on_entry_click(self, event):
+        """
+        Handle behavior when the search entry is clicked (to remove default text).
+        """
         if self.entry_search.get() == "Search Contact":
             self.entry_search.delete(0, tk.END)
             self.entry_search.config(fg='black')
 
     def on_focus_out(self, event):
+        """
+        Handle behavior when the search entry loses focus (to restore default text if empty).
+        """
         if self.entry_search.get() == "":
             self.entry_search.insert(0, "Search Contact")
             self.entry_search.config(fg='grey')
